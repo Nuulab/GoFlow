@@ -1,4 +1,7 @@
-# GoFlow
+<div align="center">
+  <img src="docs/public/goflow-logo.png" alt="GoFlow Logo" width="120" />
+  <h1>GoFlow</h1>
+</div>
 
 **The High-Performance AI Orchestration Framework for Go.**  
 Build intelligent agents, durable workflows, and background jobs with ease.

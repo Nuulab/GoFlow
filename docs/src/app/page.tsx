@@ -1,8 +1,18 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <main className="flex h-screen flex-col justify-center text-center">
+    <main className="flex h-screen flex-col justify-center text-center items-center">
+      <div className="mb-8">
+        <Image 
+          src="/goflow-logo.png" 
+          alt="GoFlow Logo" 
+          width={150} 
+          height={150} 
+          priority
+        />
+      </div>
       <h1 className="mb-4 text-4xl font-bold">GoFlow</h1>
       <p className="text-fd-muted-foreground mb-8">
         Production-ready AI Agent & Workflow Framework for Go
