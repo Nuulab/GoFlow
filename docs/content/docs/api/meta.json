@@ -1,0 +1,12 @@
+{
+  "title": "API Reference",
+  "icon": "FileCode",
+  "pages": [
+    "agent",
+    "workflow",
+    "queue",
+    "tools",
+    "cache",
+    "api-server"
+  ]
+}

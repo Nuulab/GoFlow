@@ -1,0 +1,5 @@
+{
+  "title": "JavaScript SDK",
+  "icon": "Code",
+  "pages": ["index", "streaming", "workflows", "queues"]
+}

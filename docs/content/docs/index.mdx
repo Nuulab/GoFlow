@@ -1,0 +1,69 @@
+---
+title: Documentation
+description: Learn how to build AI agents, workflows, and background jobs with GoFlow.
+icon: BookOpen
+---
+
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+<div className="goflow-hero">
+
+# GoFlow Documentation
+
+**GoFlow** is the high-performance AI orchestration framework for Go. Build intelligent agents, durable workflows, and background jobs with a simple, powerful API.
+
+</div>
+
+<Callout type="info">
+  **New to GoFlow?** Start with the [Getting Started](/docs/guide/getting-started) guide to build your first agent in 5 minutes.
+</Callout>
+
+## Get Started
+
+<Cards>
+  <Card title="What is GoFlow?" href="/docs/guide/what-is-goflow" description="Learn about GoFlow's architecture and core concepts." />
+  <Card title="Getting Started" href="/docs/guide/getting-started" description="Build your first AI agent in 5 minutes." />
+  <Card title="Installation" href="/docs/guide/installation" description="Install GoFlow and set up your environment." />
+</Cards>
+
+## Core Features
+
+<Cards>
+  <Card title="Agents" href="/docs/guide/agents" description="Build AI agents with tool use, memory, and multi-provider LLM support." />
+  <Card title="Workflows" href="/docs/guide/workflows" description="Durable execution engine with state persistence and automatic retries." />
+  <Card title="Queues" href="/docs/guide/queues" description="High-throughput background job processing with Redis/DragonflyDB." />
+  <Card title="LLM Providers" href="/docs/guide/providers" description="Configure OpenAI, Anthropic, Gemini, and local models." />
+</Cards>
+
+## SDKs & Tools
+
+<Cards>
+  <Card title="JavaScript SDK" href="/docs/sdk" description="TypeScript client for agents, workflows, and queues with streaming." />
+  <Card title="CLI Reference" href="/docs/cli" description="Command-line tools for development and operations." />
+</Cards>
+
+## API Reference
+
+<Cards>
+  <Card title="Agent API" href="/docs/api/agent" description="Core agent runtime package documentation." />
+  <Card title="Workflow API" href="/docs/api/workflow" description="Workflow engine package documentation." />
+  <Card title="Queue API" href="/docs/api/queue" description="Job queue package documentation." />
+  <Card title="REST API" href="/docs/api/api-server" description="HTTP endpoints and WebSocket events." />
+</Cards>
+
+## Why GoFlow?
+
+| Feature | GoFlow | Python Alternatives |
+|---------|--------|---------------------|
+| **Performance** | ~10x faster | Baseline |
+| **Deployment** | Single binary | Complex pip/venv |
+| **Concurrency** | Native goroutines | GIL limitations |
+| **Type Safety** | Compile-time | Runtime |
+| **Memory** | ~10x less | Baseline |
+
+---
+
+<div className="text-center text-fd-muted-foreground text-sm mt-8">
+  Created by **Nuulab** • Released under the **MIT License**
+</div>

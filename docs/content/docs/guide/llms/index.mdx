@@ -1,0 +1,78 @@
+---
+title: Overview
+description: GoFlow supports multiple Large Language Model providers out of the box.
+---
+
+GoFlow provides a unified interface for working with various Large Language Models (LLMs). You can easily switch between providers or use multiple providers simultaneously within the same agent or workflow.
+
+## Supported Providers
+
+| Provider | Package | Default Model | Streaming |
+|----------|---------|---------------|-----------|
+| [OpenAI](./llms/openai) | `pkg/llm/openai` | `gpt-4o` | ✅ |
+| [Anthropic](./llms/anthropic) | `pkg/llm/anthropic` | `claude-3-5-sonnet-20241022` | ✅ |
+| [Gemini](./llms/gemini) | `pkg/llm/gemini` | `gemini-1.5-flash` | ✅ |
+
+## Configuration
+
+Set your API keys before running your application. You can set these in your environment variables or in your `.env` file.
+
+```bash
+# OpenAI
+export OPENAI_API_KEY="sk-..."
+
+# Anthropic
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google Gemini (either works)
+export GOOGLE_API_KEY="AIza..."
+export GEMINI_API_KEY="AIza..."
+```
+
+## Quick Start
+
+Initialize a provider and start using it immediately:
+
+```go
+import (
+    "github.com/nuulab/goflow/pkg/llm/openai"
+    "github.com/nuulab/goflow/pkg/llm/anthropic"
+    "github.com/nuulab/goflow/pkg/llm/gemini"
+)
+
+func main() {
+    // OpenAI - reads OPENAI_API_KEY from env
+    llm1 := openai.New("")
+
+    // Anthropic Claude - reads ANTHROPIC_API_KEY from env
+    llm2 := anthropic.New("")
+
+    // Google Gemini - reads GOOGLE_API_KEY from env
+    llm3 := gemini.New("")
+}
+```
+
+## Using with Agents
+
+Pass the initialized LLM to an agent:
+
+```go
+import (
+    "github.com/nuulab/goflow/pkg/agent"
+    "github.com/nuulab/goflow/pkg/llm/openai"
+    "github.com/nuulab/goflow/pkg/tools"
+)
+
+// Create LLM
+llm := openai.New("")
+
+// Create agent with LLM
+myAgent := agent.New(llm, tools.BuiltinTools(),
+    agent.WithMaxIterations(10),
+    agent.WithSystemPrompt("You are a helpful coding assistant."),
+)
+
+// Run task
+result, err := myAgent.Run(ctx, "Write a function to reverse a string in Go")
+fmt.Println(result.Output)
+```

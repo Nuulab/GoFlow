@@ -1,0 +1,65 @@
+---
+title: Custom Providers
+description: Implementing your own LLM provider
+---
+
+## Configuration Options
+
+All providers in GoFlow support a standard set of configuration options, ensuring a consistent API regardless of the backend.
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `core.WithTemperature(f)` | Controls randomness/creativity (0.0-2.0) | `core.WithTemperature(0.7)` |
+| `core.WithMaxTokens(n)` | Limits the output length | `core.WithMaxTokens(1000)` |
+| `core.WithTopP(f)` | Nucleus sampling probability | `core.WithTopP(0.9)` |
+| `core.WithStopSequences(s...)` | Sequences that stop generation | `core.WithStopSequences("\n\n")` |
+
+### Usage Example
+
+```go
+response, err := llm.Generate(ctx, prompt,
+    core.WithTemperature(0.7),
+    core.WithMaxTokens(500),
+    core.WithTopP(0.9),
+)
+```
+
+## Implementing a Custom Provider
+
+You can add support for any LLM provider (e.g., local Llama via raw API, Mistral, Cohere) by implementing the `core.LLM` interface.
+
+### The Interface
+
+```go
+type LLM interface {
+    // Generate simple text completion
+    Generate(ctx context.Context, prompt string, opts ...Option) (string, error)
+    
+    // Generate chat completion
+    GenerateChat(ctx context.Context, messages []Message, opts ...Option) (string, error)
+    
+    // Stream text completion
+    Stream(ctx context.Context, prompt string, opts ...Option) (<-chan string, error)
+    
+    // Stream chat completion
+    StreamChat(ctx context.Context, messages []Message, opts ...Option) (<-chan string, error)
+}
+```
+
+### Implementation Example
+
+```go
+type MyLLM struct {
+    client *myclient.Client
+}
+
+func (m *MyLLM) Generate(ctx context.Context, prompt string, opts ...core.Option) (string, error) {
+    // 1. Process options (temperature, max tokens, etc.)
+    config := core.NewConfig(opts...)
+    
+    // 2. Call your backend API
+    return m.client.Complete(prompt, config.Temperature)
+}
+
+// ... implement other methods
+```

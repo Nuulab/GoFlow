@@ -1,0 +1,33 @@
+---
+title: Google Gemini
+description: Using Google Gemini models with GoFlow
+---
+
+## Supported Models
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| `gemini-1.5-pro` | 2M | Most capable, massive context window |
+| `gemini-1.5-flash` | 1M | Fast, efficient, large context |
+| `gemini-1.5-flash-8b` | 1M | High throughput, lowest cost |
+| `gemini-1.0-pro` | 32K | Legacy usage |
+
+## Usage
+
+### Initialization
+
+```go
+import "github.com/nuulab/goflow/pkg/llm/gemini"
+
+// Default: gemini-1.5-flash
+llm := gemini.New("")
+
+// Specify model
+llm := gemini.New("", gemini.WithModel("gemini-1.5-pro"))
+
+// With custom options
+llm := gemini.New("AIza-your-key",
+    gemini.WithModel("gemini-1.5-pro"),
+    gemini.WithTimeout(120*time.Second),
+)
+```

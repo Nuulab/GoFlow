@@ -1,0 +1,79 @@
+---
+title: OpenAI
+description: Using OpenAI models with GoFlow
+---
+
+## Supported Models
+
+GoFlow supports all major OpenAI models.
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| `gpt-4o` | 128K | Most capable, multimodal, high intelligence |
+| `gpt-4o-mini` | 128K | Fast, cost-effective, good for simple tasks |
+| `gpt-4-turbo` | 128K | Previous flagship model |
+| `gpt-3.5-turbo` | 16K | Legacy budget option |
+| `o1-preview` | 128K | Advanced reasoning capabilities |
+| `o1-mini` | 128K | Fast reasoning model |
+
+## Usage
+
+### Initialization
+
+```go
+import "github.com/nuulab/goflow/pkg/llm/openai"
+
+// Default: gpt-4o
+llm := openai.New("")
+
+// Specify model
+llm := openai.New("", openai.WithModel("gpt-4o-mini"))
+
+// With custom options
+llm := openai.New("sk-your-key",
+    openai.WithModel("gpt-4o"),
+    openai.WithTimeout(60*time.Second),
+)
+
+// Azure OpenAI Support
+llm := openai.New("your-azure-key",
+    openai.WithBaseURL("https://your-resource.openai.azure.com/openai/deployments/gpt-4o"),
+)
+```
+
+### Generation
+
+```go
+// Simple text completion
+response, err := llm.Generate(ctx, "What is Go?")
+
+// Chat completion with history
+response, err := llm.GenerateChat(ctx, []core.Message{
+    {Role: core.RoleSystem, Content: "You are a helpful assistant."},
+    {Role: core.RoleUser, Content: "What is Go?"},
+})
+
+// With generation options
+response, err := llm.Generate(ctx, "Tell me a joke",
+    core.WithTemperature(0.9),
+    core.WithMaxTokens(100),
+)
+```
+
+### Streaming
+
+GoFlow provides native streaming support for real-time responses.
+
+```go
+// Stream text response
+stream, err := llm.Stream(ctx, "Write a story about a robot")
+for chunk := range stream {
+    fmt.Print(chunk)
+}
+
+// Stream chat response
+stream, err := llm.StreamChat(ctx, messages)
+for chunk := range stream {
+    fmt.Print(chunk)
+}
+```

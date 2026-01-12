@@ -1,0 +1,23 @@
+{
+  "title": "Guide",
+  "icon": "BookOpen",
+  "pages": [
+    "what-is-goflow",
+    "getting-started",
+    "installation",
+    "---Core Concepts---",
+    "agents",
+    "llms",
+    "tools",
+    "---Execution---",
+    "workflows",
+    "queues",
+    "webhooks",
+    "---Production---",
+    "microservice",
+    "multi-agent",
+    "integrations",
+    "scaling",
+    "deployment"
+  ]
+}

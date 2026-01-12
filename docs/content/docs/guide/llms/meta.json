@@ -1,0 +1,10 @@
+{
+  "title": "LLMs",
+  "pages": [
+    "index",
+    "openai",
+    "anthropic",
+    "gemini",
+    "custom"
+  ]
+}

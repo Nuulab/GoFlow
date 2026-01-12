@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+/* GoFlow - Go-inspired Theme */
+:root {
+  /* Go Gopher Blue */
+  --fd-primary: 199 100% 48%;
+  --fd-primary-foreground: 0 0% 100%;
+  
+  /* Go Link Cyan */
+  --fd-accent: 189 100% 35%;
+  --fd-accent-foreground: 0 0% 100%;
+  
+  /* Warmer background for light mode */
+  --fd-background: 210 20% 98%;
+  --fd-foreground: 220 13% 18%;
+  
+  /* Card backgrounds */
+  --fd-card: 0 0% 100%;
+  --fd-card-foreground: 220 13% 18%;
+  
+  /* Muted tones */
+  --fd-muted: 210 15% 94%;
+  --fd-muted-foreground: 220 10% 45%;
+  
+  /* Border */
+  --fd-border: 210 15% 88%;
+}
+
+.dark {
+  /* Go Gopher Blue (slightly brighter for dark) */
+  --fd-primary: 199 100% 55%;
+  --fd-primary-foreground: 0 0% 100%;
+  
+  /* Dark mode backgrounds */
+  --fd-background: 220 20% 8%;
+  --fd-foreground: 210 20% 96%;
+  
+  /* Card backgrounds */
+  --fd-card: 220 18% 12%;
+  --fd-card-foreground: 210 20% 96%;
+  
+  /* Muted tones */
+  --fd-muted: 220 15% 16%;
+  --fd-muted-foreground: 210 10% 60%;
+  
+  /* Border */
+  --fd-border: 220 15% 20%;
+}
+
+/* Custom GoFlow Branding */
+.fd-nav-title {
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #5B8DEE, #7C5BBF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero section styling */
+.goflow-hero {
+  background: linear-gradient(135deg, 
+    rgba(91, 141, 238, 0.08) 0%, 
+    rgba(124, 91, 191, 0.05) 50%,
+    transparent 100%);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.dark .goflow-hero {
+  background: linear-gradient(135deg, 
+    rgba(91, 141, 238, 0.15) 0%, 
+    rgba(124, 91, 191, 0.08) 50%,
+    transparent 100%);
+}
+
+/* Code block enhancements */
+[data-rehype-pretty-code-figure] pre {
+  border: 1px solid var(--fd-border);
+}
+
+/* Smooth animations */
+* {
+  scroll-behavior: smooth;
+}

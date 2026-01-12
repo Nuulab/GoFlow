@@ -1,0 +1,205 @@
+---
+title: JavaScript SDK
+description: TypeScript/JavaScript client for GoFlow with streaming, workflows, and queues.
+icon: Code
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+<Callout type="info">
+  **Package Name:** `@goflow/client`  
+  **TypeScript Support:** Full type definitions included
+</Callout>
+
+## Installation
+
+<Tabs items={['npm', 'bun', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+```bash
+npm install @goflow/client
+```
+  </Tab>
+  <Tab value="bun">
+```bash
+bun add @goflow/client
+```
+  </Tab>
+  <Tab value="pnpm">
+```bash
+pnpm add @goflow/client
+```
+  </Tab>
+  <Tab value="yarn">
+```bash
+yarn add @goflow/client
+```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+```typescript title="Connect and run an agent"
+import { GoFlowClient } from '@goflow/client'
+
+const client = new GoFlowClient('http://localhost:8080')
+
+// Run an AI agent with a task
+const result = await client.agent('assistant').run('What is 2+2?')
+console.log(result.output) // "4"
+```
+
+## Client API
+
+The `GoFlowClient` is the main entry point for interacting with GoFlow.
+
+```typescript title="GoFlowClient"
+class GoFlowClient {
+  constructor(baseUrl: string, options?: ClientOptions)
+  
+  // Controllers
+  agent(name: string): AgentController
+  workflow(id: string): WorkflowController
+  get queue(): QueueController
+  
+  // Real-time connection
+  connect(): void
+  disconnect(): void
+  on(event: string, callback: (data: any) => void): void
+}
+```
+
+## Agent Controller
+
+Run AI agents and receive results or stream tokens.
+
+<Tabs items={['Basic Usage', 'Streaming']}>
+  <Tab value="Basic Usage">
+```typescript
+const result = await client.agent('assistant').run('Analyze this data')
+
+console.log(result.output)      // Final response
+console.log(result.tool_calls)  // Tools that were used
+console.log(result.duration)    // Execution time in ms
+```
+  </Tab>
+  <Tab value="Streaming">
+```typescript
+const stream = client.agent('assistant').runStream('Write a poem')
+
+for await (const event of stream) {
+  switch (event.type) {
+    case 'token':
+      process.stdout.write(event.content)
+      break
+    case 'tool_start':
+      console.log('Using tool:', event.toolCall.name)
+      break
+    case 'done':
+      console.log('\nComplete!')
+      break
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+### Types
+
+```typescript title="Agent Types"
+interface RunResult {
+  output: string
+  steps: Step[]
+  tool_calls: ToolCall[]
+  duration: number
+}
+
+interface StreamEvent {
+  type: 'token' | 'step' | 'tool_start' | 'tool_end' | 'done' | 'error'
+  content?: string
+  step?: Step
+  toolCall?: ToolCall
+  error?: string
+}
+```
+
+## Workflow Controller
+
+Start and manage durable workflow executions.
+
+```typescript title="Workflow Operations"
+// Start a workflow with input
+const { id } = await client.workflow('order-process').start({
+  orderId: 12345,
+  items: ['item-a', 'item-b']
+})
+
+// Check status
+const status = await client.workflow(id).status()
+console.log(status.state)  // 'running' | 'paused' | 'completed' | 'failed'
+
+// Pause and resume
+await client.workflow(id).pause()
+await client.workflow(id).resume()
+
+// Send a signal
+await client.workflow(id).signal('approval', { approved: true })
+```
+
+## Queue Controller
+
+Enqueue and manage background jobs.
+
+```typescript title="Queue Operations"
+// Enqueue a job
+const job = await client.queue.enqueue('send_email', {
+  to: 'user@example.com',
+  subject: 'Welcome!'
+})
+
+// Get job status
+const status = await client.queue.get(job.id)
+
+// List jobs
+const jobs = await client.queue.list({ status: 'pending', limit: 10 })
+
+// Retry a failed job
+await client.queue.retry(job.id)
+```
+
+## Real-time Events
+
+Subscribe to WebSocket events for live updates.
+
+```typescript title="Event Subscription"
+client.connect()
+
+client.on('job.completed', (event) => {
+  console.log('✓ Job completed:', event.job_id)
+})
+
+client.on('workflow.step', (event) => {
+  console.log('Workflow advanced to:', event.state)
+})
+
+client.on('agent.token', (event) => {
+  process.stdout.write(event.token)
+})
+
+// Don't forget to disconnect when done
+client.disconnect()
+```
+
+## Error Handling
+
+```typescript title="Error Handling"
+try {
+  const result = await client.agent('assistant').run('Do something')
+} catch (error) {
+  if (error instanceof GoFlowError) {
+    console.error('GoFlow error:', error.code, error.message)
+  } else {
+    throw error
+  }
+}
+```
