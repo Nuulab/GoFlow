@@ -1,0 +1,132 @@
+version: "3.8"
+
+# Docker Swarm Stack for GoFlow
+# Deploy with: docker stack deploy -c docker-stack.yml goflow
+
+services:
+  # API Server - handles HTTP/WebSocket requests
+  api:
+    image: goflow:latest
+    build: .
+    command: ["-mode", "api", "-port", "8080"]
+    ports:
+      - "8080:8080"
+    environment:
+      - GOFLOW_MODE=api
+      - GOFLOW_REDIS=dragonfly:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - goflow-net
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.goflow.rule=Host(`goflow.local`)"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Worker - processes queue jobs (scale this for throughput)
+  worker:
+    image: goflow:latest
+    build: .
+    command: ["-mode", "worker", "-concurrency", "5"]
+    environment:
+      - GOFLOW_MODE=worker
+      - GOFLOW_REDIS=dragonfly:6379
+      - GOFLOW_WORKER_CONCURRENCY=5
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - goflow-net
+    deploy:
+      mode: replicated
+      replicas: 3  # Scale workers for more throughput
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  # Scheduler - runs cron jobs (single instance)
+  scheduler:
+    image: goflow:latest
+    build: .
+    command: ["-mode", "scheduler"]
+    environment:
+      - GOFLOW_MODE=scheduler
+      - GOFLOW_REDIS=dragonfly:6379
+    networks:
+      - goflow-net
+    deploy:
+      mode: replicated
+      replicas: 1  # Only 1 scheduler to avoid duplicate cron
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+  # DragonflyDB - Redis-compatible cache/queue backend
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    command: ["--logtostderr", "--cluster_mode=emulated"]
+    volumes:
+      - dragonfly_data:/data
+    networks:
+      - goflow-net
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+
+  # Traefik - Load balancer (optional)
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8081:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - goflow-net
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  goflow-net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  dragonfly_data:

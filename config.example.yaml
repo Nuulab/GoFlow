@@ -1,0 +1,46 @@
+# GoFlow Configuration
+# Copy to config.yaml and customize
+
+server:
+  port: 8080
+  cors:
+    allowed_origins:
+      - "*"
+
+# LLM Provider Configuration
+llm:
+  provider: "openai"  # openai, anthropic, google
+  api_key: "${OPENAI_API_KEY}"
+  model: "gpt-4"
+  
+# Agent Settings
+agent:
+  max_iterations: 10
+  default_timeout: "5m"
+  verbose: false
+
+# Cache/Queue (DragonflyDB or Redis)
+cache:
+  enabled: false
+  address: "localhost:6379"
+  password: ""
+  database: 0
+
+# Workflow Settings
+workflow:
+  persistence: true
+  checkpoint_interval: "30s"
+
+# Cron Jobs (optional)
+cron:
+  enabled: true
+  jobs: []
+    # - id: "daily-sync"
+    #   workflow: "sync_workflow"
+    #   schedule: "@daily"
+    #   input: {}
+
+# Logging
+logging:
+  level: "info"  # debug, info, warn, error
+  format: "json" # json, text

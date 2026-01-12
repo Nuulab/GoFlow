@@ -1,0 +1,69 @@
+{
+  "name": "@nuulab/goflow",
+  "version": "1.0.0",
+  "description": "JavaScript/TypeScript SDK for GoFlow AI orchestration framework",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "eslint src/**/*.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "goflow",
+    "ai",
+    "agents",
+    "orchestration",
+    "llm",
+    "workflow",
+    "queue"
+  ],
+  "author": "Nuulab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuulab/goflow"
+  },
+  "homepage": "https://goflowai.dev",
+  "bugs": {
+    "url": "https://github.com/nuulab/goflow/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "npm@10.0.0",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.7.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
+}

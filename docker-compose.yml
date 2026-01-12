@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  goflow:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - GOFLOW_PORT=8080
+      - GOFLOW_REDIS=dragonfly:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - dragonfly
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly_data:/data
+    command: ["--logtostderr"]
+    restart: unless-stopped
+
+volumes:
+  dragonfly_data:

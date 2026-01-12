@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoFlow SDK Demo</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --border: #333;
+      --accent: #6366f1;
+      --text: #e5e5e5;
+      --muted: #888;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background: #1e3a1e;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: #4ade80;
+    }
+    
+    .status.disconnected {
+      background: #3a1e1e;
+      color: #f87171;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 50%;
+    }
+    
+    input, textarea, button {
+      font-family: inherit;
+      font-size: 0.875rem;
+    }
+    
+    input, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    
+    button:hover {
+      opacity: 0.9;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .log {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      height: 200px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    
+    .log-entry {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .log-entry .time {
+      color: var(--muted);
+    }
+    
+    .log-entry .type {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .flex {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .flex-1 { flex: 1; }
+  </style>
+</head>
+<body>
+  <h1>🚀 GoFlow SDK Demo</h1>
+  <p class="subtitle">Real-time communication with AI agents</p>
+  
+  <div class="grid">
+    <!-- Connection -->
+    <div class="card">
+      <h2>
+        🔌 Connection
+        <span id="status" class="status disconnected">
+          <span class="dot"></span>
+          Disconnected
+        </span>
+      </h2>
+      <input type="text" id="serverUrl" value="http://localhost:8080" placeholder="Server URL">
+      <div class="flex">
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+      </div>
+    </div>
+    
+    <!-- Agent -->
+    <div class="card">
+      <h2>🤖 Agent Control</h2>
+      <input type="text" id="agentId" value="demo-agent" placeholder="Agent ID">
+      <textarea id="task" placeholder="Enter a task for the agent...">What is 2 + 2?</textarea>
+      <div class="flex">
+        <button onclick="runAgent()">Run Task</button>
+        <button onclick="resetAgent()">Reset</button>
+      </div>
+    </div>
+    
+    <!-- Settings -->
+    <div class="card">
+      <h2>⚙️ Settings</h2>
+      <div class="flex">
+        <div class="flex-1">
+          <label style="font-size: 0.75rem; color: var(--muted)">Max Iterations</label>
+          <input type="number" id="maxIterations" value="10">
+        </div>
+        <div class="flex-1">
+          <label style="font-size: 0.75rem; color: var(--muted)">Verbose</label>
+          <input type="checkbox" id="verbose" style="width: auto; margin-top: 0.5rem">
+        </div>
+      </div>
+      <button onclick="updateSettings()">Update Settings</button>
+    </div>
+    
+    <!-- Channel -->
+    <div class="card">
+      <h2>📡 Channel</h2>
+      <input type="text" id="channelName" value="main" placeholder="Channel name">
+      <div class="flex">
+        <input type="text" id="message" placeholder="Message" class="flex-1" style="margin: 0">
+        <button onclick="publishMessage()">Send</button>
+      </div>
+    </div>
+    
+    <!-- Event Log -->
+    <div class="card" style="grid-column: 1 / -1">
+      <h2>📋 Event Log</h2>
+      <div id="log" class="log"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Inline SDK for demo (in production, import from @goflow/client)
+    class GoFlowClient {
+      constructor(baseUrl) {
+        this.baseUrl = baseUrl.replace(/\/$/, '');
+        this.wsUrl = baseUrl.replace(/^http/, 'ws') + '/ws';
+        this.ws = null;
+        this.handlers = new Map();
+      }
+
+      async connect() {
+        return new Promise((resolve, reject) => {
+          this.ws = new WebSocket(this.wsUrl);
+          this.ws.onopen = () => {
+            this.emit('connected', {});
+            resolve();
+          };
+          this.ws.onclose = () => this.emit('disconnected', {});
+          this.ws.onerror = reject;
+          this.ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            this.emit(data.type, data);
+            this.emit('*', data);
+          };
+        });
+      }
+
+      disconnect() {
+        this.ws?.close();
+        this.ws = null;
+      }
+
+      on(event, handler) {
+        if (!this.handlers.has(event)) this.handlers.set(event, new Set());
+        this.handlers.get(event).add(handler);
+        return () => this.handlers.get(event)?.delete(handler);
+      }
+
+      emit(event, data) {
+        this.handlers.get(event)?.forEach(h => h(data));
+      }
+
+      send(msg) {
+        if (this.ws?.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify(msg));
+        }
+      }
+
+      async fetch(path, options = {}) {
+        const res = await fetch(this.baseUrl + path, {
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        return res.json();
+      }
+
+      agent(id) {
+        return {
+          run: (task) => this.fetch(`/api/agents/${id}/run`, {
+            method: 'POST',
+            body: JSON.stringify({ task }),
+          }),
+          reset: () => this.fetch(`/api/agents/${id}/reset`, { method: 'POST' }),
+        };
+      }
+
+      get settings() {
+        return {
+          get: () => this.fetch('/api/settings'),
+          update: (s) => this.fetch('/api/settings', {
+            method: 'PUT',
+            body: JSON.stringify(s),
+          }),
+        };
+      }
+
+      publish(channel, topic, data) {
+        this.send({ type: 'publish', payload: { channel, topic, data } });
+      }
+    }
+
+    // Global client
+    let client = null;
+
+    window.connect = async () => {
+      const url = document.getElementById('serverUrl').value;
+      client = new GoFlowClient(url);
+      
+      client.on('connected', () => {
+        document.getElementById('status').className = 'status';
+        document.getElementById('status').innerHTML = '<span class="dot"></span> Connected';
+        log('system', 'Connected to GoFlow');
+      });
+
+      client.on('disconnected', () => {
+        document.getElementById('status').className = 'status disconnected';
+        document.getElementById('status').innerHTML = '<span class="dot"></span> Disconnected';
+        log('system', 'Disconnected');
+      });
+
+      client.on('*', (event) => {
+        if (event.type !== 'connected' && event.type !== 'pong') {
+          log(event.type, JSON.stringify(event.data || {}));
+        }
+      });
+
+      try {
+        await client.connect();
+      } catch (e) {
+        log('error', 'Connection failed: ' + e.message);
+      }
+    };
+
+    window.disconnect = () => client?.disconnect();
+
+    window.runAgent = async () => {
+      if (!client) return alert('Connect first');
+      const id = document.getElementById('agentId').value;
+      const task = document.getElementById('task').value;
+      log('agent', `Running: ${task}`);
+      
+      try {
+        const result = await client.agent(id).run(task);
+        log('result', JSON.stringify(result));
+      } catch (e) {
+        log('error', e.message);
+      }
+    };
+
+    window.resetAgent = async () => {
+      if (!client) return;
+      const id = document.getElementById('agentId').value;
+      await client.agent(id).reset();
+      log('agent', 'Agent reset');
+    };
+
+    window.updateSettings = async () => {
+      if (!client) return;
+      await client.settings.update({
+        max_iterations: parseInt(document.getElementById('maxIterations').value),
+        verbose_logging: document.getElementById('verbose').checked,
+      });
+      log('settings', 'Settings updated');
+    };
+
+    window.publishMessage = () => {
+      if (!client) return;
+      const channel = document.getElementById('channelName').value;
+      const message = document.getElementById('message').value;
+      client.publish(channel, 'message', { text: message });
+      log('channel', `Published to ${channel}: ${message}`);
+    };
+
+    function log(type, message) {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `<span class="time">${time}</span> <span class="type">[${type}]</span> ${message}`;
+      document.getElementById('log').prepend(entry);
+    }
+  </script>
+</body>
+</html>
