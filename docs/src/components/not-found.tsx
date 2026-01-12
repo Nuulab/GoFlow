@@ -1,11 +1,11 @@
-import { Link } from '@tanstack/react-router';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
+import Link from 'next/link';
 
 export function NotFound() {
   return (
     <HomeLayout
       nav={{
-        title: 'Tanstack Start',
+        title: 'GoFlow Docs',
       }}
       className="text-center py-32 justify-center"
     >
@@ -17,7 +17,7 @@ export function NotFound() {
           temporarily unavailable.
         </p>
         <Link
-          to="/"
+          href="/"
           className="mt-4 px-4 py-2 rounded-lg bg-fd-primary text-fd-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
         >
           Back to Home
