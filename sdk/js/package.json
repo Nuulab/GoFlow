@@ -1,6 +1,6 @@
 {
   "name": "@nuulab/goflow",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "JavaScript/TypeScript SDK for GoFlow AI orchestration framework",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -43,7 +43,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nuulab/goflow"
+    "url": "https://github.com/nuulab/goflow.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "homepage": "https://goflowai.dev",
   "bugs": {
